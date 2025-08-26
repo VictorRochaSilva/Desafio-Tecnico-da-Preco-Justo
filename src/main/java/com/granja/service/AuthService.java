@@ -64,18 +64,17 @@ public class AuthService {
     /**
      * Creates a new user in the system.
      * 
-     * @param userDTO the user data to create
-     * @param password the password for the new user
+     * @param userDTO the user data to create (including password)
      * @return the created user DTO
      */
-    public UserDTO createUser(UserDTO userDTO, String password) {
+    public UserDTO createUser(UserDTO userDTO) {
         if (userRepository.existsByUsername(userDTO.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
         
         User user = User.builder()
                 .username(userDTO.getUsername())
-                .password(passwordEncoder.encode(password))
+                .password(passwordEncoder.encode(userDTO.getPassword()))
                 .name(userDTO.getName())
                 .role(userDTO.getRole())
                 .active(true)

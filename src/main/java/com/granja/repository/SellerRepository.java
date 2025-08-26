@@ -70,4 +70,11 @@ public interface SellerRepository extends JpaRepository<Seller, Long> {
      */
     // TODO: Implement proper performance query when sales relationship is stable
     // List<Seller> findByMinSalesCount(@Param("minSalesCount") Integer minSalesCount);
+    
+    /**
+     * Finds all sellers ordered by registration date (newest first).
+     * 
+     * @return list of sellers ordered by registration date
+     */
+    List<Seller> findAllByOrderByRegistrationDateDesc();
 }

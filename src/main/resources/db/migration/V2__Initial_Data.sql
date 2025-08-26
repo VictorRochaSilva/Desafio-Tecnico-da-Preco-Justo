@@ -4,10 +4,15 @@
 -- Descrição: Inserção de dados iniciais para testes
 -- =====================================================
 
--- Inserir usuário administrador padrão
--- Senha: admin123 (deve ser alterada em produção)
-INSERT INTO users (username, password, name, role, active, registration_date) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'Administrador', 'ADMIN', true, CURRENT_TIMESTAMP);
+-- Usuário administrador deve ser criado manualmente através da API
+-- Endpoint: POST /api/auth/users/create
+-- Exemplo de payload:
+-- {
+--   "username": "admin",
+--   "password": "admin123",
+--   "name": "Administrador",
+--   "role": "ADMIN"
+-- }
 
 -- Inserir vendedores de exemplo
 INSERT INTO sellers (name, cpf, employee_id, registration_date) VALUES

@@ -44,15 +44,12 @@ public class AuthController {
     /**
      * Creates a new user in the system.
      * 
-     * @param userDTO the user data to create
-     * @param password the password for the new user
+     * @param userDTO the user data to create (including password)
      * @return the created user information
      */
     @PostMapping("/users/create")
-    public ResponseEntity<UserDTO> createUser(
-            @Valid @RequestBody UserDTO userDTO,
-            @RequestParam String password) {
-        UserDTO createdUser = authService.createUser(userDTO, password);
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
+        UserDTO createdUser = authService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 }

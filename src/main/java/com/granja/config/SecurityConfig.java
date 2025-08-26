@@ -31,9 +31,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.and())
             .authorizeHttpRequests(auth -> auth
+                // Rotas públicas (sem autenticação)
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/auth/users/create").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/").permitAll()
+                // Todas as outras rotas requerem autenticação
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

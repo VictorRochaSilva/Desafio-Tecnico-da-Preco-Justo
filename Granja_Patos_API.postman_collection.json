@@ -1,0 +1,432 @@
+{
+	"info": {
+		"_postman_id": "granja-patos-api",
+		"name": "Granja Patos API",
+		"description": "Collection completa para testar a API de Gerenciamento de Granja de Patos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "victor-rocha-silva"
+	},
+	"item": [
+		{
+			"name": "🔐 Autenticação",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Usuário",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"vendedor1\",\n  \"password\": \"vendedor123\",\n  \"name\": \"João Vendedor\",\n  \"role\": \"SELLER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/users/create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "users", "create"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🦆 Patos",
+			"item": [
+				{
+					"name": "Listar Todos os Patos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ducks",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ducks"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Pato",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Pato Donald\",\n  \"breed\": \"Pekin\",\n  \"age\": 2,\n  \"weight\": 3.5,\n  \"price\": 45.00,\n  \"status\": \"AVAILABLE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ducks",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ducks"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Pato por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ducks/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ducks", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patos Disponíveis",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/ducks/available",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ducks", "available"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👥 Clientes",
+			"item": [
+				{
+					"name": "Listar Todos os Clientes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/customers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "customers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Cliente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria@email.com\",\n  \"phone\": \"(11) 99999-9999\",\n  \"discountEligible\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/customers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "customers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter Cliente por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/customers/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "customers", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "👨‍💼 Vendedores",
+			"item": [
+				{
+					"name": "Listar Todos os Vendedores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sellers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sellers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Vendedor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Pedro Vendedor\",\n  \"cpf\": \"123.456.789-00\",\n  \"employeeId\": \"EMP001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sellers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sellers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ranking de Vendedores",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sellers/ranking",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sellers", "ranking"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "💰 Vendas",
+			"item": [
+				{
+					"name": "Listar Todas as Vendas",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/sales",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sales"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registrar Venda",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"duckId\": 1,\n  \"customerId\": 1,\n  \"sellerId\": 1,\n  \"price\": 45.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sales",
+							"host": ["{{base_url}}"],
+							"path": ["api", "sales"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "📊 Relatórios",
+			"item": [
+				{
+					"name": "Relatório de Vendas (Excel)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reports/sales",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reports", "sales"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ranking de Vendedores (Excel)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/reports/seller-ranking",
+							"host": ["{{base_url}}"],
+							"path": ["api", "reports", "seller-ranking"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🏠 Home",
+			"item": [
+				{
+					"name": "API Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/actuator/health",
+							"host": ["{{base_url}}"],
+							"path": ["actuator", "health"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "SEU_TOKEN_JWT_AQUI",
+			"type": "string"
+		}
+	]
+}

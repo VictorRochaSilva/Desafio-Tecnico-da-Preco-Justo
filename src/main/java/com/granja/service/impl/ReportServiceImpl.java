@@ -362,7 +362,7 @@ public class ReportServiceImpl implements ReportService {
         // Mesclar células (ajustado para 7 colunas)
         sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 0, 3));
         sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 4, 5));
-        sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 6, 6));
+        // Não mesclar célula única (coluna 6)
     }
     
     private void createSellerSummaryRow(Sheet sheet, int rowNum, List<SellerMetrics> metricsList, 

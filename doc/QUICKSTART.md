@@ -1,119 +1,202 @@
-# 🚀 Início Rápido - Granja de Patos API
+# 🚀 **QUICKSTART - Granja de Patos API**
 
-**Configure e execute o projeto em 5 minutos!** ⚡
+## ⚡ **Início Rápido em 5 Minutos**
 
-## 📋 **Pré-requisitos**
+### **📋 Pré-requisitos**
+- ✅ Java 17+ instalado
+- ✅ Docker Desktop rodando
+- ✅ Maven (opcional - projeto usa Maven Wrapper)
 
-- ✅ **Java 17** ou superior
-- ✅ **Docker Desktop** instalado e rodando
-- ✅ **Git** para clonar o repositório
+### **🚀 Opção 1: Docker Compose (Mais Fácil)**
 
-## 🚀 **Passo a Passo Rápido**
-
-### **1. Clone o Repositório**
+#### **Setup automático:**
 ```bash
-git clone <url-do-repositorio>
-cd preco-justo
-```
+# 1. Subir banco de dados
+docker-compose up -d postgres
 
-### **2. Inicialize o Banco Automaticamente** 🎯
-```bash
-# Windows (duplo clique ou executar como admin)
-init-database.bat
+# 2. Aguardar 5-10 segundos para banco inicializar
+# 3. Executar migrações
+./mvnw flyway:migrate
 
-# Linux/Mac
-chmod +x init-database.sh
-./init-database.sh
-```
-
-**✨ Este script faz TUDO automaticamente:**
-- Verifica se o Docker está rodando
-- Inicia o PostgreSQL
-- Cria o banco `duck_farm`
-- Prepara para o Flyway
-
-### **3. Execute a Aplicação**
-```bash
-# Usando Maven Wrapper (não precisa instalar Maven)
+# 4. Rodar aplicação
 ./mvnw spring-boot:run
 ```
 
-### **4. Acesse a API**
-- 🌐 **URL Base**: http://localhost:8080
-- 📚 **Swagger UI**: http://localhost:8080/swagger-ui.html
-- 🔍 **Health Check**: http://localhost:8080/api/health
-
-## 🔐 **Primeiro Acesso**
-
-### **1. Criar Usuário Admin**
+#### **Setup completo (banco + app):**
 ```bash
-curl -X POST "http://localhost:8080/api/auth/users/create?password=admin123" \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","name":"Administrador","role":"ADMIN"}'
+# Tudo em um comando
+docker-compose --profile full-stack up -d
+
+# API rodando em http://localhost:8080
+# Swagger em http://localhost:8080/swagger-ui.html
 ```
 
-### **2. Fazer Login**
+### **🔧 Opção 2: Setup Manual**
+
+#### **1. Clone e Entre no Projeto**
 ```bash
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+git clone <url-do-repositorio>
+cd granja-patos
 ```
 
-### **3. Usar a API**
+#### **2. Configure o Banco de Dados**
 ```bash
-# Incluir token no cabeçalho
-curl -X GET http://localhost:8080/api/ducks \
-  -H "Authorization: Bearer SEU_TOKEN_JWT"
+# Verificar se o Docker está rodando
+docker ps
+
+# Criar container PostgreSQL (se não existir)
+docker run --name duck_farm_db -e POSTGRES_DB=duck_farm -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
 ```
 
-## 🧪 **Teste Rápido**
-
-### **Importar Collection do Postman**
-1. Abra o Postman
-2. Importe: `doc/Granja_Patos_API.postman_collection.json`
-3. Configure a variável `base_url` como `http://localhost:8080`
-4. Execute o endpoint "Login" para obter o token
-5. Teste os outros endpoints!
-
-## 🆘 **Problemas Comuns**
-
-### **Erro: "database duck_farm does not exist"**
+#### **3. Execute as Migrações**
 ```bash
-# Execute o script de inicialização
-./init-database.sh  # Linux/Mac
-# ou
-init-database.bat   # Windows
+# Executar migrações Flyway
+./mvnw flyway:migrate
+
+# Verificar status
+./mvnw flyway:info
 ```
 
-### **Erro: "Docker not running"**
-- Inicie o Docker Desktop
-- Aguarde o ícone ficar verde
-- Execute o script novamente
-
-### **Erro: "Port 8080 already in use"**
+#### **4. Execute a Aplicação**
 ```bash
-# Pare outros serviços na porta 8080
-# Ou mude a porta no application.yml
-server:
-  port: 8081
+# Rodar com Maven Wrapper
+./mvnw spring-boot:run
+
+# Ou com Maven instalado
+mvn spring-boot:run
 ```
 
-## 📚 **Próximos Passos**
+#### **5. Teste a API**
+```bash
+# Health check
+curl http://localhost:8080/actuator/health
 
-- 📖 **Leia o README principal** para entender a arquitetura
-- 🗄️ **Consulte o FLYWAY_GUIDE.md** para migrações de banco
-- 🔌 **Use a collection do Postman** para testar todos os endpoints
-- 📊 **Teste os relatórios Excel** em `/api/reports/sales`
+# Swagger UI
+http://localhost:8080/swagger-ui.html
+```
 
-## 🎯 **O que foi criado automaticamente?**
+### **🎯 Endpoints Principais**
 
-- 🐘 **PostgreSQL** rodando na porta 5432
-- 🗄️ **Banco `duck_farm`** com todas as tabelas
-- 📊 **Dados de exemplo** (usuários, patos, clientes, vendedores)
-- 🔐 **Usuário admin** pronto para uso
-- 📈 **Relatórios Excel** funcionando
-- 🚀 **API completa** com autenticação JWT
+#### **Autenticação (sem JWT)**
+- `POST /api/auth/users/create` - Criar usuário
+- `POST /api/auth/login` - Fazer login
 
----
+#### **Patos (com JWT)**
+- `GET /api/ducks` - Listar patos
+- `POST /api/ducks` - Criar pato
+- `GET /api/ducks/{id}` - Buscar pato
+- `PUT /api/ducks/{id}` - Atualizar pato
+- `DELETE /api/ducks/{id}` - Deletar pato
 
-**🎉 Parabéns! Sua API está rodando e pronta para uso!**
+### **🔑 Fluxo de Autenticação**
+
+#### **1. Criar Usuário**
+```json
+POST /api/auth/users/create
+{
+  "username": "admin",
+  "password": "admin123",
+  "name": "Administrador",
+  "role": "ADMIN"
+}
+```
+
+#### **2. Fazer Login**
+```json
+POST /api/auth/login
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+#### **3. Usar JWT nas Requisições**
+```bash
+# Adicionar header Authorization
+Authorization: Bearer <jwt-token>
+```
+
+### **🐳 Comandos Docker Úteis**
+
+```bash
+# Ver containers rodando
+docker ps
+
+# Ver logs do PostgreSQL
+docker logs duck_farm_db
+
+# Conectar no banco
+docker exec -it duck_farm_db psql -U postgres -d duck_farm
+
+# Parar container
+docker stop duck_farm_db
+
+# Remover container
+docker rm duck_farm_db
+```
+
+### **📊 Comandos Maven Úteis**
+
+```bash
+# Limpar e compilar
+./mvnw clean compile
+
+# Executar testes
+./mvnw test
+
+# Executar migrações
+./mvnw flyway:migrate
+
+# Ver status das migrações
+./mvnw flyway:info
+
+# Limpar banco (cuidado!)
+./mvnw flyway:clean
+
+# Rodar aplicação
+./mvnw spring-boot:run
+```
+
+### **🚨 Solução de Problemas**
+
+#### **Erro de Conexão com Banco**
+```bash
+# Verificar se Docker está rodando
+docker ps
+
+# Verificar se container existe
+docker ps -a
+
+# Recriar container se necessário
+docker stop duck_farm_db
+docker rm duck_farm_db
+docker run --name duck_farm_db -e POSTGRES_DB=duck_farm -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
+```
+
+#### **Erro de Migração Flyway**
+```bash
+# Verificar configurações no pom.xml
+# Verificar se banco está rodando
+# Executar flyway:info para ver status
+./mvnw flyway:info
+```
+
+#### **Erro de Porta em Uso**
+```bash
+# Verificar se porta 8080 está livre
+netstat -an | findstr 8080
+
+# Parar aplicação (Ctrl+C)
+# Ou mudar porta no application.yml
+```
+
+### **🎉 Pronto!**
+
+Sua API está rodando em `http://localhost:8080` com:
+- ✅ **Banco PostgreSQL** configurado
+- ✅ **Migrações Flyway** executadas
+- ✅ **JWT** funcionando
+- ✅ **Swagger** documentando
+- ✅ **Endpoints** protegidos
+
+**Agora é só usar!** 🚀✨

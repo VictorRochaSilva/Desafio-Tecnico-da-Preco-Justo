@@ -44,6 +44,12 @@ public class UserDTO {
     private String username;
     
     /**
+     * Password for authentication (required for new users)
+     */
+    @NotBlank(message = "Password is required")
+    private String password;
+    
+    /**
      * Full name of the user
      */
     @NotBlank(message = "User name is required")

@@ -7,9 +7,10 @@ Uma API REST abrangente para gerenciar um negócio de granja de patos, construí
 ### Operações de Negócio Principais
 - **Gerenciamento de Patos**: Gerenciamento completo do ciclo de vida de patos individuais com rastreamento de linhagem
 - **Gerenciamento de Clientes**: Perfis de clientes com elegibilidade para desconto (20% automático)
-- **Operações de Venda**: Processamento de transações com cálculo automático de desconto e auditoria
 - **Gerenciamento de Vendedores**: Acompanhamento de funcionários com métricas de performance e proteção contra exclusão
+- **Operações de Venda**: Processamento de transações com cálculo automático de desconto e auditoria
 - **Relatórios Excel**: Geração profissional de relatórios em Excel com Apache POI para análises de vendas e rankings de vendedores
+- **Ranking de Vendedores**: Endpoint específico para ranking de vendedores por performance
 
 ### Funcionalidades Técnicas
 - **Autenticação JWT**: Autenticação segura e stateless com controle de acesso baseado em roles
@@ -95,40 +96,134 @@ docker exec -it duck_farm_db psql -U postgres -c "CREATE DATABASE duck_farm;"
 ```
 
 ### 2. Configuração da Aplicação
-Edite `src/main/resources/application.yml`:
-```yaml
-spring:
+Edite `src/main/resources/application.yml` se necessário (configurações padrão já estão corretas).
+
+### 3. **IMPORTANTE: Criar Primeira Conta de Usuário**
+Após executar as migrações, você **DEVE** criar sua primeira conta de usuário:
+
+```bash
+# Criar usuário administrador
+curl -X POST http://localhost:8080/api/auth/users/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123",
+    "name": "Administrador",
+    "role": "ADMIN"
+  }'
+```
+
+**⚠️ ATENÇÃO:** Sem criar um usuário, você não conseguirá acessar a API!
   datasource:
     url: jdbc:postgresql://localhost:5432/duck_farm
     username: postgres
     password: postgres
 ```
 
-### 3. Executar Aplicação
+## 🚀 **Executando a Aplicação**
+
+### **🐳 Opção 1: Docker Compose (Recomendado)**
+
+#### **Setup completo com um comando:**
 ```bash
-# Compilar
-mvn clean compile
+# Subir apenas o banco de dados
+docker-compose up -d postgres
 
-# Executar
-mvn spring-boot:run
+# Aguardar banco ficar saudável (5-10 segundos)
+# Executar migrações
+./mvnw flyway:migrate
 
-# O Flyway executará automaticamente as migrações na primeira execução
+# Rodar aplicação
+./mvnw spring-boot:run
 ```
 
-### 4. Acessar API
+#### **Setup completo (banco + aplicação):**
+```bash
+# Subir tudo (banco + app)
+docker-compose --profile full-stack up -d
+
+# A API estará disponível em http://localhost:8080
+# Swagger em http://localhost:8080/swagger-ui.html
+```
+
+#### **Comandos úteis:**
+```bash
+# Ver logs
+docker-compose logs -f
+
+# Parar tudo
+docker-compose down
+
+# Parar e remover volumes (reset completo)
+docker-compose down -v
+
+# Rebuild e subir
+docker-compose up --build
+```
+
+### **🔧 Opção 2: Setup Manual**
+
+#### **1. Configuração do Banco de Dados**
+```bash
+# Verificar se o Docker está rodando
+docker ps
+
+# Se não houver container, criar um novo
+docker run --name duck_farm_db -e POSTGRES_DB=duck_farm -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15
+```
+
+#### **2. Executar Migrações Flyway**
+```bash
+# Executar migrações do banco de dados
+./mvnw flyway:migrate
+
+# Verificar status das migrações
+./mvnw flyway:info
+
+# Limpar banco (cuidado - apaga todos os dados!)
+./mvnw flyway:clean
+```
+
+#### **3. Executar a Aplicação**
+```bash
+# Executar com Maven Wrapper
+./mvnw spring-boot:run
+
+# Ou executar com Maven instalado
+mvn spring-boot:run
+```
+
+#### **4. Verificar se está funcionando**
+```bash
+# Health check
+curl http://localhost:8080/actuator/health
+
+# Swagger UI
+http://localhost:8080/swagger-ui.html
+```
+
+### 4. **CRIAR PRIMEIRA CONTA DE USUÁRIO (OBRIGATÓRIO!)**
+Após executar as migrações, você **DEVE** criar sua primeira conta:
+
+```bash
+# Criar usuário administrador
+curl -X POST http://localhost:8080/api/auth/users/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123",
+    "name": "Administrador",
+    "role": "ADMIN"
+  }'
+```
+
+### 5. Acessar API
 - **URL Base**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
 
 ## 🔐 Autenticação
 
-### 1. Criar Usuário Admin
-```bash
-curl -X POST "http://localhost:8080/api/auth/users/create?password=admin123" \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","name":"Administrador","role":"ADMIN"}'
-```
-
-### 2. Fazer Login
+### 1. Fazer Login
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
@@ -149,7 +244,7 @@ A documentação completa está organizada na pasta [`doc/`](doc/):
 
 - **🚀 [Início Rápido](doc/QUICKSTART.md)** - Configuração em 5 minutos
 - **🗄️ [Guia Flyway](doc/FLYWAY_GUIDE.md)** - Migrações de banco de dados
-- **🔌 [Collection Postman](doc/Granja_Patos_API.postman_collection.json)** - Testes completos da API
+- **🔌 [Collection Postman](Granja_Patos_API.postman_collection.json)** - Testes completos da API
 - **📚 [README da Documentação](doc/README.md)** - Estrutura e organização
 
 ### 📋 **Endpoints da API**
@@ -173,6 +268,14 @@ A documentação completa está organizada na pasta [`doc/`](doc/):
 - `POST /api/customers` - Criar novo cliente
 - `PUT /api/customers/{id}` - Atualizar cliente
 - `DELETE /api/customers/{id}` - Deletar cliente
+
+### Gerenciamento de Vendedores
+- `GET /api/sellers` - Listar todos os vendedores
+- `GET /api/sellers/{id}` - Obter vendedor por ID
+- `POST /api/sellers` - Criar novo vendedor
+- `PUT /api/sellers/{id}` - Atualizar vendedor
+- `DELETE /api/sellers/{id}` - Deletar vendedor
+- `GET /api/sellers/ranking` - Ranking de vendedores por performance
 
 ### Operações de Venda
 - `GET /api/sales` - Listar todas as vendas
@@ -481,8 +584,8 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 - **Swagger UI**: [Interface Interativa](http://localhost:8080/swagger-ui.html)
 - **Documentação Técnica**: Pasta [`doc/`](doc/) com guias especializados
 - **Collection Postman**: [`doc/Granja_Patos_API.postman_collection.json`](doc/Granja_Patos_API.postman_collection.json)
-- **Issues**: [GitHub Issues](https://github.com/granjasystem/duck-farm-api/issues)
-- **Email**: support@granjasystem.com
+- **Issues**: [GitHub Issues](https://github.com/VictorRochaSilva/Desafio-Tecnico-da-Preco-Justo/issues)
+- **Email**: victowrs.rocha@gmail.com
 
 ## 🙏 Agradecimentos
 
@@ -494,4 +597,12 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ---
 
-**Construído com ❤️ pela Equipe de Desenvolvimento do Granja System**
+**Construído com ❤️ por [Victor Rocha Silva](https://github.com/VictorRochaSilva)**
+
+---
+
+## 🔗 **Links do Projeto**
+
+- **📁 Repositório**: [https://github.com/VictorRochaSilva/Desafio-Tecnico-da-Preco-Justo](https://github.com/VictorRochaSilva/Desafio-Tecnico-da-Preco-Justo)
+- **👨‍💻 Desenvolvedor**: [https://github.com/VictorRochaSilva](https://github.com/VictorRochaSilva)
+- **📧 Contato**: victowrs.rocha@gmail.com

@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Banco de dados PostgreSQL
   postgres:
     image: postgres:15
     container_name: duck_farm_db
@@ -12,7 +13,33 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d duck_farm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
+
+  # Aplicação Spring Boot (opcional - para desenvolvimento completo)
+  app:
+    build: .
+    container_name: granja_patos_app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/duck_farm
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - full-stack
 
 volumes:
   postgres_data:
+
+networks:
+  default:
+    name: granja_network

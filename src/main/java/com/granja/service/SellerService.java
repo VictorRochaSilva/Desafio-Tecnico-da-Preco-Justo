@@ -76,4 +76,11 @@ public interface SellerService {
      * @throws RuntimeException if the seller cannot be deleted (e.g., has sales history)
      */
     void deleteSeller(Long id);
+    
+    /**
+     * Retrieves sellers ranked by performance (total sales revenue).
+     * 
+     * @return a list of sellers ordered by total revenue (highest first)
+     */
+    List<SellerDTO> getSellerRanking();
 }

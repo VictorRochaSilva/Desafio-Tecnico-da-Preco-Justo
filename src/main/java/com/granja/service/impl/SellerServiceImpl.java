@@ -116,6 +116,16 @@ public class SellerServiceImpl implements SellerService {
         sellerRepository.delete(seller);
     }
     
+    @Override
+    public List<SellerDTO> getSellerRanking() {
+        log.info("Generating seller ranking by performance");
+        // TODO: Implement actual ranking logic when sales relationship is stable
+        // For now, return all sellers ordered by registration date (newest first)
+        return sellerRepository.findAllByOrderByRegistrationDateDesc().stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+    
     private SellerDTO mapToDTO(Seller seller) {
         return SellerDTO.builder()
                 .id(seller.getId())
