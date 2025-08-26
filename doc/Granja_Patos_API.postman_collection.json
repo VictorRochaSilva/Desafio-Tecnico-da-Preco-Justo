@@ -1,0 +1,752 @@
+{
+  "info": {
+    "_postman_id": "granja-patos-api",
+    "name": "Granja de Patos - API Completa",
+    "description": "Collection completa para a API de Gerenciamento de Granja de Patos com todas as funcionalidades implementadas:\n\n✅ **Autenticação JWT**\n✅ **Gerenciamento de Patos** (com rastreamento de linhagem)\n✅ **Gerenciamento de Clientes** (com elegibilidade para desconto)\n✅ **Gerenciamento de Vendedores**\n✅ **Operações de Venda** (com cálculo automático de desconto)\n✅ **Relatórios Excel** (Apache POI)\n✅ **Migrações de Banco** (Flyway)\n\n**Funcionalidades Especiais:**\n- Desconto automático de 20% para clientes elegíveis\n- Rastreamento de linhagem de patos pelo nome da mãe\n- Geração de relatórios Excel profissionais\n- Controle de acesso baseado em roles\n- Validação automática de dados\n\n**Tecnologias:** Spring Boot 3.2.0, PostgreSQL, Flyway, Apache POI, JWT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "granja-system"
+  },
+  "item": [
+    {
+      "name": "🔐 Autenticação",
+      "description": "Endpoints para autenticação e gerenciamento de usuários",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Autenticação de usuário para obter token JWT"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', response.token);",
+                  "    console.log('Token JWT armazenado:', response.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Criar Usuário Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"name\": \"Administrador\",\n    \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/users/create?password=admin123",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "users", "create"],
+              "query": [
+                {
+                  "key": "password",
+                  "value": "admin123"
+                }
+              ]
+            },
+            "description": "Criar usuário administrador inicial (executar apenas uma vez)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🦆 Gerenciamento de Patos",
+      "description": "Operações CRUD para gerenciamento de patos individuais com rastreamento de linhagem",
+      "item": [
+        {
+          "name": "Listar Todos os Patos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ducks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks"]
+            },
+            "description": "Lista todos os patos cadastrados no sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Pato por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ducks/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks", "1"]
+            },
+            "description": "Obtém um pato específico pelo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Novo Pato",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Donald Duck\",\n    \"motherId\": null,\n    \"price\": 150.00,\n    \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ducks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks"]
+            },
+            "description": "Cria um novo pato no sistema. O campo `motherName` é opcional para rastreamento de linhagem"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Pato com Linhagem",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Duckling 1\",\n    \"motherId\": 1,\n    \"price\": 120.00,\n    \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ducks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks"]
+            },
+            "description": "Cria um pato filhote especificando o nome da mãe para rastreamento de linhagem"
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Pato",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Donald Duck Atualizado\",\n    \"motherId\": null,\n    \"price\": 180.00,\n    \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ducks/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks", "1"]
+            },
+            "description": "Atualiza os dados de um pato existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Remover Pato",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ducks/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks", "1"]
+            },
+            "description": "Remove um pato do sistema (não pode remover patos vendidos)"
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Patos por Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ducks/status/AVAILABLE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks", "status", "AVAILABLE"]
+            },
+            "description": "Filtra patos por status: AVAILABLE, SOLD, RESERVED"
+          },
+          "response": []
+        },
+        {
+          "name": "Patos Disponíveis para Venda",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ducks/available",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ducks", "available"]
+            },
+            "description": "Lista apenas patos disponíveis para venda (status AVAILABLE)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👥 Gerenciamento de Clientes",
+      "description": "Operações CRUD para gerenciamento de clientes com elegibilidade para desconto",
+      "item": [
+        {
+          "name": "Listar Todos os Clientes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Lista todos os clientes cadastrados no sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Cliente por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers", "1"]
+            },
+            "description": "Obtém um cliente específico pelo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Cliente com Desconto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Carlos Ferreira\",\n    \"cpf\": \"111.222.333-44\",\n    \"phone\": \"(11) 99999-1111\",\n    \"address\": \"Rua A, 123 - São Paulo/SP\",\n    \"discountEligible\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Cria um cliente elegível para desconto de 20% nas compras"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Cliente sem Desconto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Ana Costa\",\n    \"cpf\": \"555.666.777-88\",\n    \"phone\": \"(21) 88888-2222\",\n    \"address\": \"Av. B, 456 - Rio de Janeiro/RJ\",\n    \"discountEligible\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/customers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Cria um cliente não elegível para desconto"
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Carlos Ferreira Atualizado\",\n    \"cpf\": \"111.222.333-44\",\n    \"phone\": \"(11) 99999-9999\",\n    \"address\": \"Rua Nova, 456 - São Paulo/SP\",\n    \"discountEligible\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers", "1"]
+            },
+            "description": "Atualiza os dados de um cliente existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Remover Cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/customers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "customers", "1"]
+            },
+            "description": "Remove um cliente do sistema"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👨‍💼 Gerenciamento de Vendedores",
+      "description": "Operações CRUD para gerenciamento de vendedores com métricas de performance",
+      "item": [
+        {
+          "name": "Listar Todos os Vendedores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sellers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sellers"]
+            },
+            "description": "Lista todos os vendedores cadastrados no sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Vendedor por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sellers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sellers", "1"]
+            },
+            "description": "Obtém um vendedor específico pelo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Criar Novo Vendedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"João Silva\",\n    \"cpf\": \"123.456.789-01\",\n    \"employeeId\": \"V001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sellers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sellers"]
+            },
+            "description": "Cria um novo vendedor no sistema. CPF e matrícula devem ser únicos"
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Vendedor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"João Silva Atualizado\",\n    \"cpf\": \"123.456.789-01\",\n    \"employeeId\": \"V001\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sellers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sellers", "1"]
+            },
+            "description": "Atualiza os dados de um vendedor existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Remover Vendedor",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sellers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sellers", "1"]
+            },
+            "description": "Remove um vendedor do sistema (não pode remover vendedores com vendas)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💰 Operações de Venda",
+      "description": "Operações para registro e gerenciamento de vendas com cálculo automático de desconto",
+      "item": [
+        {
+          "name": "Listar Todas as Vendas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sales"]
+            },
+            "description": "Lista todas as vendas registradas no sistema"
+          },
+          "response": []
+        },
+        {
+          "name": "Obter Venda por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sales/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sales", "1"]
+            },
+            "description": "Obtém uma venda específica pelo ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Registrar Nova Venda",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"duckId\": 1,\n    \"customerId\": 1,\n    \"sellerId\": 1,\n    \"originalPrice\": 150.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sales"]
+            },
+            "description": "Registra uma nova venda. O desconto de 20% é aplicado automaticamente para clientes elegíveis"
+          },
+          "response": []
+        },
+        {
+          "name": "Vendas por Cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sales/customer/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sales", "customer", "1"]
+            },
+            "description": "Lista todas as vendas de um cliente específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Vendas por Vendedor",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/sales/seller/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sales", "seller", "1"]
+            },
+            "description": "Lista todas as vendas de um vendedor específico"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Relatórios Excel",
+      "description": "Endpoints para geração e download de relatórios profissionais em Excel usando Apache POI",
+      "item": [
+        {
+          "name": "Relatório de Vendas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/sales?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reports", "sales"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01T00:00:00",
+                  "description": "Data de início do período (formato ISO)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31T23:59:59",
+                  "description": "Data de fim do período (formato ISO)"
+                }
+              ]
+            },
+            "description": "Gera e faz download de relatório de vendas em Excel com:\n\n**Colunas:**\n- Nome do Pato\n- Status\n- Cliente\n- Tipo Cliente (Com/Sem Desconto)\n- Valor\n- Data/Hora\n- Vendedor\n\n**Layout:**\n- Header com título e período\n- Data de geração\n- Resumo com totais\n- Formatação profissional"
+          },
+          "response": []
+        },
+        {
+          "name": "Relatório de Ranking de Vendedores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/seller-ranking?startDate=2024-01-01T00:00:00&endDate=2024-12-31T23:59:59",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reports", "seller-ranking"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-01-01T00:00:00",
+                  "description": "Data de início do período (formato ISO)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-12-31T23:59:59",
+                  "description": "Data de fim do período (formato ISO)"
+                }
+              ]
+            },
+            "description": "Gera e faz download de relatório de ranking de vendedores em Excel com:\n\n**Colunas:**\n- Posição\n- Vendedor\n- Total de Vendas\n- Receita Total\n- Ticket Médio\n- CPF\n- Matrícula\n\n**Layout:**\n- Header com título e período\n- Data de geração\n- Ranking ordenado por receita\n- Resumo com totais\n- Formatação profissional"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🗄️ Gerenciamento de Banco (Flyway)",
+      "description": "Comandos para gerenciar migrações de banco de dados usando Flyway",
+      "item": [
+        {
+          "name": "Verificar Status das Migrações",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Verifica o status da aplicação e das migrações Flyway\n\n**Comandos Maven:**\n```bash\n# Verificar status\nmvn flyway:info\n\n# Executar migrações\nmvn flyway:migrate\n\n# Limpar banco (desenvolvimento)\nmvn flyway:clean\n```"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Verificar se o token está definido para endpoints protegidos",
+          "if (pm.request.headers.has('Authorization') && !pm.collectionVariables.get('auth_token')) {",
+          "    console.warn('Token JWT não encontrado. Execute o endpoint de Login primeiro.');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "URL base da API"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string",
+      "description": "Token JWT para autenticação (preenchido automaticamente após login)"
+    }
+  ]
+}
