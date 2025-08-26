@@ -199,7 +199,7 @@ mvn spring-boot:run
 curl http://localhost:8080/actuator/health
 
 # Swagger UI
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ### 4. **CRIAR PRIMEIRA CONTA DE USUÁRIO (OBRIGATÓRIO!)**
@@ -219,7 +219,7 @@ curl -X POST http://localhost:8080/api/auth/users/create \
 
 ### 5. Acessar API
 - **URL Base**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 
 ## 🔐 Autenticação
 
@@ -580,8 +580,8 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 🆘 Suporte
 
-- **Documentação**: [Docs da API](http://localhost:8080/swagger-ui.html)
-- **Swagger UI**: [Interface Interativa](http://localhost:8080/swagger-ui.html)
+- **Documentação**: [Docs da API](http://localhost:8080/swagger-ui/index.html)
+- **Swagger UI**: [Interface Interativa](http://localhost:8080/swagger-ui/index.html)
 - **Documentação Técnica**: Pasta [`doc/`](doc/) com guias especializados
 - **Collection Postman**: [`doc/Granja_Patos_API.postman_collection.json`](doc/Granja_Patos_API.postman_collection.json)
 - **Issues**: [GitHub Issues](https://github.com/VictorRochaSilva/Desafio-Tecnico-da-Preco-Justo/issues)

@@ -27,7 +27,7 @@ public class HomeController {
         response.put("message", "Duck Farm Management API");
         response.put("version", "1.0.0");
         response.put("status", "running");
-        response.put("documentation", "/swagger-ui.html");
+        response.put("documentation", "/swagger-ui/index.html");
         response.put("health", "/actuator/health");
         return response;
     }
