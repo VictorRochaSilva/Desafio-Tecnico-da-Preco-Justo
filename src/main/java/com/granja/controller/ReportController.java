@@ -46,22 +46,50 @@ public class ReportController {
     private final ReportService reportService;
     
     /**
-     * Gera e faz download de um relatório de vendas em formato Excel.
+     * Gera e faz download de um relatório de vendas em formato Excel (período atual).
+     * 
+     * @return arquivo Excel como array de bytes
+     */
+    @Operation(summary = "Gerar relatório de vendas (período atual)", description = "Gera e faz download de um relatório de vendas em formato Excel para o período atual")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso"),
+        @ApiResponse(responseCode = "401", description = "Acesso não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Permissões insuficientes")
+    })
+    @GetMapping("/sales")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<byte[]> generateSalesReport() {
+        
+        log.info("Gerando relatório de vendas para período atual");
+        
+        byte[] reportBytes = reportService.generateSalesReport();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "sales_report.xlsx");
+        
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(reportBytes);
+    }
+    
+    /**
+     * Gera e faz download de um relatório de vendas em formato Excel (período específico).
      * 
      * @param startDate a data de início para o período do relatório
      * @param endDate a data de fim para o período do relatório
      * @return arquivo Excel como array de bytes
      */
-    @Operation(summary = "Gerar relatório de vendas", description = "Gera e faz download de um relatório de vendas em formato Excel")
+    @Operation(summary = "Gerar relatório de vendas (período específico)", description = "Gera e faz download de um relatório de vendas em formato Excel para período específico")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso"),
         @ApiResponse(responseCode = "400", description = "Parâmetros de data inválidos"),
         @ApiResponse(responseCode = "401", description = "Acesso não autorizado"),
         @ApiResponse(responseCode = "403", description = "Permissões insuficientes")
     })
-    @GetMapping("/sales")
+    @GetMapping("/sales/period")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<byte[]> generateSalesReport(
+    public ResponseEntity<byte[]> generateSalesReportForPeriod(
             @Parameter(description = "Data de início para o período do relatório", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @Parameter(description = "Data de fim para o período do relatório", required = true)
@@ -81,22 +109,50 @@ public class ReportController {
     }
     
     /**
-     * Gera e faz download de um relatório de ranking de vendedores em formato Excel.
+     * Gera e faz download de um relatório de ranking de vendedores em formato Excel (período atual).
+     * 
+     * @return arquivo Excel como array de bytes
+     */
+    @Operation(summary = "Gerar relatório de ranking de vendedores (período atual)", description = "Gera e faz download de um relatório de ranking de vendedores em formato Excel para o período atual")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso"),
+        @ApiResponse(responseCode = "401", description = "Acesso não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Permissões insuficientes")
+    })
+    @GetMapping("/seller-ranking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<byte[]> generateSellerRankingReport() {
+        
+        log.info("Gerando relatório de ranking de vendedores para período atual");
+        
+        byte[] reportBytes = reportService.generateSellerRankingReport();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "seller_ranking_report.xlsx");
+        
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(reportBytes);
+    }
+    
+    /**
+     * Gera e faz download de um relatório de ranking de vendedores em formato Excel (período específico).
      * 
      * @param startDate a data de início para o período do relatório
      * @param endDate a data de fim para o período do relatório
      * @return arquivo Excel como array de bytes
      */
-    @Operation(summary = "Gerar relatório de ranking de vendedores", description = "Gera e faz download de um relatório de ranking de vendedores em formato Excel")
+    @Operation(summary = "Gerar relatório de ranking de vendedores (período específico)", description = "Gera e faz download de um relatório de ranking de vendedores em formato Excel para período específico")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso"),
         @ApiResponse(responseCode = "400", description = "Parâmetros de data inválidos"),
         @ApiResponse(responseCode = "401", description = "Acesso não autorizado"),
         @ApiResponse(responseCode = "403", description = "Permissões insuficientes")
     })
-    @GetMapping("/seller-ranking")
+    @GetMapping("/seller-ranking/period")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public ResponseEntity<byte[]> generateSellerRankingReport(
+    public ResponseEntity<byte[]> generateSellerRankingReportForPeriod(
             @Parameter(description = "Data de início para o período do relatório", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @Parameter(description = "Data de fim para o período do relatório", required = true)

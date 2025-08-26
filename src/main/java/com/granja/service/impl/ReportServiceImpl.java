@@ -43,6 +43,18 @@ public class ReportServiceImpl implements ReportService {
     private static final DateTimeFormatter DATE_ONLY_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     
     /**
+     * Gera um relatório de vendas em formato Excel para o período atual.
+     * 
+     * @return array de bytes contendo o arquivo Excel
+     */
+    @Override
+    public byte[] generateSalesReport() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(1); // Último mês
+        return generateSalesReport(startDate, endDate);
+    }
+    
+    /**
      * Gera um relatório de vendas em formato Excel para o período especificado.
      * 
      * @param startDate a data de início para o período do relatório
@@ -128,6 +140,18 @@ public class ReportServiceImpl implements ReportService {
             log.error("Erro ao gerar relatório de vendas", e);
             throw new RuntimeException("Falha ao gerar relatório de vendas", e);
         }
+    }
+    
+    /**
+     * Gera um relatório de ranking de vendedores em formato Excel para o período atual.
+     * 
+     * @return array de bytes contendo o arquivo Excel
+     */
+    @Override
+    public byte[] generateSellerRankingReport() {
+        LocalDateTime endDate = LocalDateTime.now();
+        LocalDateTime startDate = endDate.minusMonths(1); // Último mês
+        return generateSellerRankingReport(startDate, endDate);
     }
     
     /**

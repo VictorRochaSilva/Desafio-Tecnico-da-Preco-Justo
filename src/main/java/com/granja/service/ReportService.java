@@ -22,6 +22,13 @@ import java.time.LocalDateTime;
 public interface ReportService {
     
     /**
+     * Gera um relatório de vendas em formato Excel para o período atual.
+     * 
+     * @return array de bytes contendo o arquivo Excel
+     */
+    byte[] generateSalesReport();
+    
+    /**
      * Gera um relatório de vendas em formato Excel para o período especificado.
      * 
      * @param startDate a data de início para o período do relatório
@@ -29,6 +36,13 @@ public interface ReportService {
      * @return array de bytes contendo o arquivo Excel
      */
     byte[] generateSalesReport(LocalDateTime startDate, LocalDateTime endDate);
+    
+    /**
+     * Gera um relatório de ranking de vendedores em formato Excel para o período atual.
+     * 
+     * @return array de bytes contendo o arquivo Excel
+     */
+    byte[] generateSellerRankingReport();
     
     /**
      * Gera um relatório de ranking de vendedores em formato Excel para o período especificado.
